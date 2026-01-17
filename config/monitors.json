@@ -1,0 +1,39 @@
+{
+  "monitors": [
+    {
+      "id": "api-5xx-errors",
+      "name": "API 5xx Error Rate",
+      "description": "Monitor for elevated 5xx errors in production API",
+      "enabled": true,
+      "queries": {
+        "metric": "sum:trace.http.request.errors{service:api,env:production,http.status_code:5*}.as_rate()",
+        "errorTracking": "service:api env:production status:error",
+        "deployment": "service:api env:production"
+      },
+      "checkIntervalSeconds": 60,
+      "threshold": {
+        "type": "percentage",
+        "warning": 5,
+        "critical": 10
+      },
+      "timeWindow": "5m",
+      "gitlabRepositories": ["myorg/api-service", "myorg/shared-lib"],
+      "enableDatabaseInvestigation": true,
+      "databaseContext": {
+        "relevantTables": ["Users", "Orders", "Sessions"],
+        "relevantSchemas": ["dbo"]
+      },
+      "teamsNotification": {
+        "channelWebhookUrl": "https://outlook.office.com/webhook/example",
+        "mentionUsers": ["oncall@example.com"],
+        "urlPatterns": {
+          "datadog": "https://app.datadoghq.com/apm/service/api",
+          "gitlab": "https://gitlab.com/{{repository}}/commit/{{sha}}",
+          "incident": "https://platform.example.com/api/v1/incidents/{{incidentId}}"
+        }
+      },
+      "tags": ["service:api", "team:backend"],
+      "severity": "critical"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "server": {
+    "port": 3000,
+    "logLevel": "info"
+  },
+  "datadog": {
+    "site": "datadoghq.com",
+    "errorTrackingEnabled": true,
+    "deploymentTrackingEnabled": false
+  },
+  "gitlab": {
+    "url": "https://gitlab.com"
+  },
+  "gemini": {
+    "model": "gemini-1.5-pro",
+    "maxTokens": 4000,
+    "temperature": 0.2
+  },
+  "database": {
+    "host": "localhost",
+    "port": 1433,
+    "database": "incident_response",
+    "readOnlyInvestigation": {
+      "enabled": true,
+      "timeoutSeconds": 10,
+      "maxRows": 100,
+      "auditLogging": true
+    }
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "ttl": {
+      "baseline": 86400,
+      "metrics": 300,
+      "repoMetadata": 3600,
+      "llmResponses": 3600
+    }
+  },
+  "sourcegraph": {
+    "url": "https://sourcegraph.com",
+    "maxResults": 10
+  },
+  "webSearch": {
+    "enabled": false,
+    "provider": "duckduckgo",
+    "maxSearches": 3
+  },
+  "monitoring": {
+    "configPath": "./config/monitors.json",
+    "hotReloadEnabled": true
+  }
+}

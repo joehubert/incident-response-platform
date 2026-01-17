@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Monitor Configuration",
+  "type": "object",
+  "properties": {
+    "monitors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/MonitorConfig"
+      }
+    }
+  },
+  "required": ["monitors"],
+  "definitions": {
+    "MonitorConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique monitor identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable monitor name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Monitor description"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the monitor is enabled"
+        },
+        "queries": {
+          "type": "object",
+          "properties": {
+            "metric": {
+              "type": "string",
+              "description": "Datadog metric query"
+            },
+            "errorTracking": {
+              "type": "string",
+              "description": "Error tracking query"
+            },
+            "deployment": {
+              "type": "string",
+              "description": "Deployment tracking query"
+            }
+          },
+          "required": ["metric"]
+        },
+        "checkIntervalSeconds": {
+          "type": "integer",
+          "minimum": 30,
+          "description": "Check interval in seconds"
+        },
+        "threshold": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["absolute", "percentage", "multiplier"]
+            },
+            "warning": {
+              "type": "number"
+            },
+            "critical": {
+              "type": "number"
+            }
+          },
+          "required": ["type", "warning", "critical"]
+        },
+        "timeWindow": {
+          "type": "string",
+          "description": "Time window for metric aggregation"
+        },
+        "gitlabRepositories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "GitLab repository paths to investigate"
+        },
+        "enableDatabaseInvestigation": {
+          "type": "boolean",
+          "description": "Enable database investigation"
+        },
+        "databaseContext": {
+          "type": "object",
+          "properties": {
+            "relevantTables": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "relevantSchemas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "teamsNotification": {
+          "type": "object",
+          "properties": {
+            "channelWebhookUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "mentionUsers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "urlPatterns": {
+              "type": "object",
+              "properties": {
+                "datadog": {
+                  "type": "string"
+                },
+                "gitlab": {
+                  "type": "string"
+                },
+                "incident": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": ["channelWebhookUrl"]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "enabled",
+        "queries",
+        "checkIntervalSeconds",
+        "threshold",
+        "timeWindow",
+        "gitlabRepositories",
+        "enableDatabaseInvestigation",
+        "teamsNotification",
+        "tags",
+        "severity"
+      ]
+    }
+  }
+}
