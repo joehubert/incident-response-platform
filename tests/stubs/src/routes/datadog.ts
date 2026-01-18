@@ -4,7 +4,7 @@ import { loadConfig, loadScenario } from '../config';
 export const datadogRouter = Router();
 
 // Metrics query
-datadogRouter.post('/v1/query', (req, res) => {
+datadogRouter.get('/v1/query', (req, res) => {
   const config = loadConfig();
   const scenario = loadScenario(config.scenario);
   

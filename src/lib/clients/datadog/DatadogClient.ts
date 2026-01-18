@@ -66,8 +66,12 @@ export class DatadogClient {
       throw new ExternalAPIError('Datadog', 'Missing API key or App key');
     }
 
+    const baseURL = this.site.startsWith('http')
+      ? this.site
+      : `https://api.${this.site}`;
+
     this.client = axios.create({
-      baseURL: `https://api.${this.site}`,
+      baseURL,
       headers: {
         'DD-API-KEY': this.apiKey,
         'DD-APPLICATION-KEY': this.appKey,
