@@ -1,2 +1,2 @@
-// Teams client - to be implemented in document 05
-export {};
+export { TeamsClient } from './TeamsClient';
+export type { TeamsMessage, TeamsSendResult, AdaptiveCard } from './types';

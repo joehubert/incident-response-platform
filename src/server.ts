@@ -1,17 +1,26 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { config } from './config';
 import { logger } from './lib/utils/logger';
 import { register as metricsRegister } from './lib/utils/metrics';
-import { DetectionService } from './services/detection';
+import { DetectionService, MonitorManager } from './services/detection';
 import { DatadogClient } from './lib/clients/datadog';
 import { DatabaseClient } from './lib/clients/database';
 import { RedisClient } from './lib/clients/redis';
+import { createApiRouter } from './api/routes';
+import {
+  authenticateApiKey,
+  errorHandler,
+  notFoundHandler,
+  requestLogger,
+} from './api/middleware';
 
 let detectionService: DetectionService | null = null;
 let database: DatabaseClient | null = null;
 let redis: RedisClient | null = null;
+let monitorManager: MonitorManager | null = null;
 
 export async function startServer() {
   const app = express();
@@ -21,6 +30,21 @@ export async function startServer() {
   app.use(cors());
   app.use(express.json());
 
+  // Request logging
+  app.use(requestLogger);
+
+  // Rate limiting for API routes
+  const apiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 100, // 100 requests per minute
+    message: {
+      error: {
+        code: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests, please try again later',
+      },
+    },
+  });
+
   // Initialize database
   database = new DatabaseClient();
   await database.connect();
@@ -29,39 +53,39 @@ export async function startServer() {
   redis = new RedisClient();
   await redis.connect();
 
+  // Initialize Monitor Manager
+  monitorManager = new MonitorManager(config.monitoring.configPath);
+  await monitorManager.loadMonitors();
+
   // Initialize Detection Service
   const datadog = new DatadogClient();
   detectionService = new DetectionService(datadog, redis, database);
   await detectionService.start();
 
-  // Health check endpoint
+  // Public endpoints (no auth required)
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Metrics endpoint
   app.get('/metrics', async (_req, res) => {
     res.set('Content-Type', metricsRegister.contentType);
     res.end(await metricsRegister.metrics());
   });
 
-  // Reload monitors endpoint (for hot reload)
-  app.post('/api/v1/monitors/reload', async (_req, res) => {
-    try {
-      await detectionService?.reloadMonitors();
-      res.json({ success: true, message: 'Monitors reloaded' });
-    } catch (error) {
-      logger.error('Failed to reload monitors', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      res.status(500).json({
-        success: false,
-        error: 'Failed to reload monitors',
-      });
-    }
+  // API routes (protected with API key auth)
+  const apiRouter = createApiRouter({
+    database,
+    redis,
+    monitorManager,
   });
 
-  // TODO: Add API routes (will be added in document 05)
+  app.use('/api/v1', apiLimiter, authenticateApiKey, apiRouter);
+
+  // 404 handler
+  app.use(notFoundHandler);
+
+  // Error handler
+  app.use(errorHandler);
 
   // Graceful shutdown
   process.on('SIGTERM', async () => {

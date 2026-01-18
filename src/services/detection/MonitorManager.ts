@@ -122,6 +122,13 @@ export class MonitorManager {
   }
 
   /**
+   * Get all enabled monitors (alias for getMonitors)
+   */
+  getAllMonitors(): MonitorConfig[] {
+    return this.getMonitors();
+  }
+
+  /**
    * Get monitor by ID
    */
   getMonitor(id: string): MonitorConfig | undefined {
@@ -133,5 +140,12 @@ export class MonitorManager {
    */
   getMonitorCount(): number {
     return this.monitors.size;
+  }
+
+  /**
+   * Reload configuration (alias for reloadMonitors)
+   */
+  async reloadConfiguration(): Promise<void> {
+    await this.reloadMonitors();
   }
 }

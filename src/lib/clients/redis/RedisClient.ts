@@ -108,6 +108,24 @@ export class RedisClient {
   }
 
   /**
+   * Ping Redis to check connection
+   */
+  async ping(): Promise<string> {
+    if (!this.client) {
+      throw new CacheError('Redis client not connected');
+    }
+
+    try {
+      return await this.client.ping();
+    } catch (error) {
+      logger.error('Redis PING error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new CacheError('Failed to ping Redis', error as Error);
+    }
+  }
+
+  /**
    * Disconnect from Redis
    */
   async disconnect(): Promise<void> {
