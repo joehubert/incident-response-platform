@@ -7,12 +7,7 @@ import logger from '../../lib/utils/logger';
  *
  * Catches all errors and formats them into consistent API responses.
  */
-export function errorHandler(
-  error: Error,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-): void {
+export function errorHandler(error: Error, req: Request, res: Response, _next: NextFunction): void {
   // Log the error
   logger.error('Request error', {
     path: req.path,

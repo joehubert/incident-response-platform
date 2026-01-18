@@ -153,10 +153,7 @@ export class AnalysisService {
    * Generate fallback analysis without LLM
    * Used when Gemini is unavailable or returns invalid response
    */
-  private generateFallbackAnalysis(
-    incident: Incident,
-    evidence: EvidenceBundle
-  ): IncidentAnalysis {
+  private generateFallbackAnalysis(incident: Incident, evidence: EvidenceBundle): IncidentAnalysis {
     const topCommit = evidence.gitlabContext?.commits[0];
 
     const fallbackAnalysis: IncidentAnalysis = {
@@ -187,7 +184,8 @@ export class AnalysisService {
             }
           : undefined,
       },
-      mechanism: 'Detailed mechanism analysis requires LLM availability. Please review the evidence manually.',
+      mechanism:
+        'Detailed mechanism analysis requires LLM availability. Please review the evidence manually.',
       databaseFindings: evidence.databaseContext
         ? {
             schemaIssues: evidence.databaseContext.schemaFindings.map((f) => f.description),
@@ -215,7 +213,9 @@ export class AnalysisService {
         },
         {
           priority: 2,
-          action: topCommit ? `Review commit ${topCommit.sha.slice(0, 8)}` : 'Review recent deployments',
+          action: topCommit
+            ? `Review commit ${topCommit.sha.slice(0, 8)}`
+            : 'Review recent deployments',
           reasoning: 'High-scoring commit based on temporal proximity',
           estimatedImpact: 'Potential rollback candidate if causative',
         },

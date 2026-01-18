@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  stub-service:
+    build: .
+    ports:
+      - "3100:3100"  # HTTP APIs
+      - "1433:1433"  # SQL Server
+    environment:
+      - SCENARIO=missing-db-column
+      - BASE_TIMESTAMP=2026-01-09T10:00:00Z
+      - HTTP_PORT=3100
+      - SQL_PORT=1433
+      - NODE_ENV=development
+    volumes:
+      - ./src/scenarios:/app/src/scenarios:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3100/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

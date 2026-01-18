@@ -39,7 +39,7 @@ export class AnomalyDetector {
         thresholdValue = isAnomaly ? threshold.critical : threshold.warning;
         break;
 
-      case 'percentage':
+      case 'percentage': {
         // Current value changed by percentage from baseline
         const percentChange = Math.abs(((currentValue - baselineValue) / baselineValue) * 100);
         isAnomaly = percentChange > threshold.critical;
@@ -51,8 +51,9 @@ export class AnomalyDetector {
               : 'low';
         thresholdValue = baselineValue * (1 + threshold.critical / 100);
         break;
+      }
 
-      case 'multiplier':
+      case 'multiplier': {
         // Current value is multiplier times baseline
         const multiplier = currentValue / baselineValue;
         isAnomaly = multiplier > threshold.critical;
@@ -64,6 +65,7 @@ export class AnomalyDetector {
               : 'low';
         thresholdValue = baselineValue * threshold.critical;
         break;
+      }
     }
 
     if (!isAnomaly) {

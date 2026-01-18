@@ -43,7 +43,8 @@ export class HealthController {
         checks,
       };
 
-      const statusCode = overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 200 : 503;
+      const statusCode =
+        overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 200 : 503;
 
       res.status(statusCode).json(response);
     } catch (error) {

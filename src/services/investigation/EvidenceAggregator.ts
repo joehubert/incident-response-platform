@@ -119,8 +119,9 @@ export class EvidenceAggregator {
     scoredCommits: ScoredCommit[],
     diffs?: Map<string, GitLabCommitDiff>,
     pipelines?: Map<string, { status: string; url: string }>,
-    mergeRequests?: Map<string, { id: number; title: string; url: string }>
-  , datadogContext?: DatadogContext): GitLabContext {
+    mergeRequests?: Map<string, { id: number; title: string; url: string }>,
+    datadogContext?: DatadogContext
+  ): GitLabContext {
     const commits: CommitInfo[] = scoredCommits.map((sc) => {
       const diff = diffs?.get(sc.sha);
       const pipeline = pipelines?.get(sc.sha);

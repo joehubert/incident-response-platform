@@ -10,12 +10,7 @@ import { DatadogClient } from './lib/clients/datadog';
 import { DatabaseClient } from './lib/clients/database';
 import { RedisClient } from './lib/clients/redis';
 import { createApiRouter } from './api/routes';
-import {
-  authenticateApiKey,
-  errorHandler,
-  notFoundHandler,
-  requestLogger,
-} from './api/middleware';
+import { authenticateApiKey, errorHandler, notFoundHandler, requestLogger } from './api/middleware';
 
 let detectionService: DetectionService | null = null;
 let database: DatabaseClient | null = null;

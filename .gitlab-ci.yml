@@ -1,0 +1,113 @@
+stages:
+  - lint
+  - test
+  - build
+  - scan
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  DOCKER_LATEST: $CI_REGISTRY_IMAGE:latest
+
+# Lint stage
+lint:
+  stage: lint
+  image: node:20-alpine
+  before_script:
+    - npm install -g pnpm@8
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm run lint
+    - pnpm run typecheck
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .pnpm-store/
+
+# Test stage
+test:unit:
+  stage: test
+  image: node:20-alpine
+  before_script:
+    - npm install -g pnpm@8
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm run test:unit
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .pnpm-store/
+
+test:integration:
+  stage: test
+  image: node:20-alpine
+  services:
+    - redis:7-alpine
+    - mcr.microsoft.com/mssql/server:2022-latest
+  variables:
+    REDIS_HOST: redis
+    DB_HOST: mssql
+    ACCEPT_EULA: "Y"
+    SA_PASSWORD: "TestPassword123!"
+  before_script:
+    - npm install -g pnpm@8
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm run test:integration
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .pnpm-store/
+
+# Build stage
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE -t $DOCKER_LATEST .
+    - docker push $DOCKER_IMAGE
+    - docker push $DOCKER_LATEST
+  only:
+    - main
+    - tags
+
+# Security scan stage
+scan:trivy:
+  stage: scan
+  image: aquasec/trivy:latest
+  script:
+    - trivy image --severity HIGH,CRITICAL --exit-code 1 $DOCKER_IMAGE
+  only:
+    - main
+    - tags
+  allow_failure: true
+
+# Deploy stage (manual)
+deploy:production:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config set-cluster k8s --server="$KUBE_SERVER" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials deployer --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=deployer
+    - kubectl config use-context default
+    - kubectl set image deployment/incident-response-platform incident-response=$DOCKER_IMAGE
+    - kubectl rollout status deployment/incident-response-platform
+  only:
+    - main
+  when: manual
+  environment:
+    name: production

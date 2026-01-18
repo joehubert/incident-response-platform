@@ -1,0 +1,172 @@
+{
+  "id": "missing-db-column",
+  "name": "Missing Database Column",
+  "description": "Database migration renamed column but code not updated",
+  
+  "datadog": {
+    "metrics": {
+      "status": "ok",
+      "series": [{
+        "metric": "trace.http.request.errors",
+        "points": [
+          [1704794400000, 2.0],
+          [1704795000000, 2.1],
+          [1704795600000, 2.0],
+          [1704796200000, 47.3]
+        ],
+        "scope": "service:api-service,http.status_code:5*"
+      }]
+    },
+    
+    "logs": {
+      "data": [
+        {
+          "id": "log-001",
+          "attributes": {
+            "timestamp": "2026-01-09T10:15:23Z",
+            "message": "TypeError: Cannot read property 'email' of undefined",
+            "service": "api-service",
+            "status": "error",
+            "attributes": {
+              "error.stack": "TypeError: Cannot read property 'email' of undefined\n    at UserController.getProfile (UserController.ts:145:28)",
+              "http.status_code": 500
+            }
+          }
+        }
+      ]
+    },
+    
+    "deployments": {
+      "data": [{
+        "id": "evt-001",
+        "type": "event",
+        "attributes": {
+          "timestamp": "2026-01-09T10:00:00Z",
+          "title": "Deployment: api-service v2.3.1",
+          "tags": [
+            "service:api-service",
+            "git.commit.sha:abc123def456789012345678901234567890abcd"
+          ]
+        }
+      }]
+    }
+  },
+  
+  "gitlab": {
+    "commits": [
+      {
+        "id": "abc123def456789012345678901234567890abcd",
+        "short_id": "abc123d",
+        "title": "Refactor: Rename email column to EmailAddress",
+        "author_email": "jane.doe@company.com",
+        "authored_date": "2026-01-09T09:45:00Z"
+      }
+    ],
+    
+    "diffs": {
+      "abc123def456789012345678901234567890abcd": [
+        {
+          "diff": "@@ -1,15 +1,15 @@\n-- Migration: Rename email column\nALTER TABLE Users\n-DROP COLUMN email;\n+DROP COLUMN email;\nALTER TABLE Users\n+ADD EmailAddress NVARCHAR(255);",
+          "new_path": "migrations/20260109_rename_email_column.sql",
+          "new_file": true
+        }
+      ]
+    },
+    
+    "files": {
+      "src/controllers/UserController.ts": {
+        "file_name": "UserController.ts",
+        "content": "aW1wb3J0IHsgUmVxdWVzdCwgUmVzcG9uc2UgfSBmcm9tICdleHByZXNzJzsKaW1wb3J0IHsgVXNlclNlcnZpY2UgfSBmcm9tICcuLi9zZXJ2aWNlcy9Vc2VyU2VydmljZSc7CgpleHBvcnQgY2xhc3MgVXNlckNvbnRyb2xsZXIgewogIGNvbnN0cnVjdG9yKHByaXZhdGUgdXNlclNlcnZpY2U6IFVzZXJTZXJ2aWNlKSB7fQoKICBhc3luYyBnZXRQcm9maWxlKHJlcTogUmVxdWVzdCwgcmVzOiBSZXNwb25zZSkgewogICAgdHJ5IHsKICAgICAgY29uc3QgdXNlciA9IGF3YWl0IHRoaXMudXNlclNlcnZpY2UuZmluZEJ5SWQocmVxLnVzZXJJZCk7CiAgICAgIC8vIE5vdGU6IERhdGFiYXNlIGNvbHVtbiByZW5hbWVkIHRvIEVtYWlsQWRkcmVzcwogICAgICByZXR1cm4gcmVzLmpzb24oewogICAgICAgIGlkOiB1c2VyLmlkLAogICAgICAgIG5hbWU6IHVzZXIubmFtZSwKICAgICAgICBlbWFpbDogdXNlci5lbWFpbCwgIC8vIFRISVMgSVMgVEhFIFBST0JMRU0hCiAgICAgICAgY3JlYXRlZEF0OiB1c2VyLmNyZWF0ZWRBdAogICAgICB9KTsKICAgIH0gY2F0Y2ggKGVycm9yKSB7CiAgICAgIGNvbnNvbGUuZXJyb3IoJ0Vycm9yIGZldGNoaW5nIHVzZXIgcHJvZmlsZTonLCBlcnJvcik7CiAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7IGVycm9yOiAnSW50ZXJuYWwgc2VydmVyIGVycm9yJyB9KTsKICAgIH0KICB9Cn0K",
+        "ref": "abc123def456789012345678901234567890abcd"
+      }
+    }
+  },
+  
+  "sourcegraph": {
+    "search": {
+      "data": {
+        "search": {
+          "results": {
+            "matchCount": 127,
+            "results": [
+              {
+                "__typename": "FileMatch",
+                "file": {
+                  "path": "src/controllers/UserController.ts",
+                  "repository": {
+                    "name": "gitlab.company.com/myorg/api-service"
+                  }
+                },
+                "lineMatches": [{
+                  "preview": "        email: user.email,",
+                  "lineNumber": 145
+                }]
+              }
+            ]
+          }
+        }
+      }
+    },
+    
+    "recentChanges": {
+      "data": {
+        "search": {
+          "results": {
+            "matchCount": 1,
+            "results": [{
+              "__typename": "CommitSearchResult",
+              "commit": {
+                "oid": "abc123def456789012345678901234567890abcd",
+                "message": "Refactor: Rename email column to EmailAddress"
+              }
+            }]
+          }
+        }
+      }
+    }
+  },
+  
+  "database": {
+    "schema": [
+      {
+        "COLUMN_NAME": "UserId",
+        "DATA_TYPE": "int",
+        "IS_NULLABLE": "NO"
+      },
+      {
+        "COLUMN_NAME": "Name",
+        "DATA_TYPE": "nvarchar",
+        "IS_NULLABLE": "NO"
+      },
+      {
+        "COLUMN_NAME": "EmailAddress",
+        "DATA_TYPE": "nvarchar",
+        "IS_NULLABLE": "NO"
+      },
+      {
+        "COLUMN_NAME": "CreatedAt",
+        "DATA_TYPE": "datetime",
+        "IS_NULLABLE": "NO"
+      }
+    ],
+    
+    "nullCheck": {
+      "error": "Invalid column name 'Email'."
+    },
+    
+    "ddlHistory": [
+      {
+        "event_time": "2026-01-09T10:00:00Z",
+        "event_type": "ALTER_TABLE",
+        "object_name": "Users",
+        "statement": "ALTER TABLE Users DROP COLUMN email;"
+      },
+      {
+        "event_time": "2026-01-09T10:00:01Z",
+        "event_type": "ALTER_TABLE",
+        "object_name": "Users",
+        "statement": "ALTER TABLE Users ADD EmailAddress NVARCHAR(255);"
+      }
+    ]
+  }
+}

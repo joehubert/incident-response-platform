@@ -206,7 +206,10 @@ export class NotificationService {
   /**
    * Get service status
    */
-  getStatus(): { teamsConfigured: boolean; teamsStatus: { webhookConfigured: boolean; graphConfigured: boolean } } {
+  getStatus(): {
+    teamsConfigured: boolean;
+    teamsStatus: { webhookConfigured: boolean; graphConfigured: boolean };
+  } {
     return {
       teamsConfigured: this.teams.isConfigured(),
       teamsStatus: this.teams.getStatus(),

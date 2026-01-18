@@ -23,7 +23,11 @@ import type {
   ScoredCommit,
   EvidenceCollectionError,
 } from './types';
-import { investigationDuration, investigationTierUsed, evidenceCompleteness } from '../../lib/utils/metrics';
+import {
+  investigationDuration,
+  investigationTierUsed,
+  evidenceCompleteness,
+} from '../../lib/utils/metrics';
 
 export class InvestigationService {
   private readonly gitlab: GitLabClient;
@@ -137,7 +141,9 @@ export class InvestigationService {
           datadogContext: {
             metricHistory: [],
           },
-          warnings: [`Investigation failed: ${error instanceof Error ? error.message : String(error)}`],
+          warnings: [
+            `Investigation failed: ${error instanceof Error ? error.message : String(error)}`,
+          ],
         },
         investigationDurationMs: durationMs,
         tierUsed: 'tier1',
@@ -226,11 +232,7 @@ export class InvestigationService {
 
     // Collect database context
     if (strategy.collectDatabaseContext && monitorConfig.databaseContext) {
-      input.databaseResults = await this.collectDatabaseContext(
-        incident,
-        monitorConfig,
-        errors
-      );
+      input.databaseResults = await this.collectDatabaseContext(incident, monitorConfig, errors);
     }
 
     // Collect Sourcegraph context
@@ -275,7 +277,9 @@ export class InvestigationService {
     for (const repository of monitorConfig.gitlabRepositories) {
       try {
         // Fetch recent commits
-        const since = new Date(incident.detectedAt.getTime() - scoringContext.recentDeploymentWindow);
+        const since = new Date(
+          incident.detectedAt.getTime() - scoringContext.recentDeploymentWindow
+        );
         const commits = await this.gitlab.getCommits({
           repository,
           since,

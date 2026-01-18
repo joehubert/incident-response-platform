@@ -167,13 +167,14 @@ export class TeamsClient {
     }
 
     return await this.retry.execute(async () => {
-      const response = await this.graphClient!.api(`/teams/${teamId}/channels/${channelId}/messages`)
-        .post({
-          body: {
-            content,
-            contentType: 'text',
-          },
-        });
+      const response = await this.graphClient!.api(
+        `/teams/${teamId}/channels/${channelId}/messages`
+      ).post({
+        body: {
+          content,
+          contentType: 'text',
+        },
+      });
 
       return {
         success: true,

@@ -20,31 +20,29 @@ export class TierStrategySelector {
     logger.debug('Evaluating tier criteria', { criteria, incidentId: incident.id });
 
     // Tier 3: Critical severity with stack trace and database config
-    if (
-      criteria.severity === 'critical' &&
-      criteria.hasStackTrace &&
-      criteria.hasDatabaseConfig
-    ) {
-      logger.info('Selected tier3 for incident', { incidentId: incident.id, reason: 'critical with stack trace and database config' });
+    if (criteria.severity === 'critical' && criteria.hasStackTrace && criteria.hasDatabaseConfig) {
+      logger.info('Selected tier3 for incident', {
+        incidentId: incident.id,
+        reason: 'critical with stack trace and database config',
+      });
       return 'tier3';
     }
 
     // Tier 3: High severity with deployment event
-    if (
-      criteria.severity === 'high' &&
-      criteria.hasDeploymentEvent &&
-      criteria.hasGitLabConfig
-    ) {
-      logger.info('Selected tier3 for incident', { incidentId: incident.id, reason: 'high severity with deployment event' });
+    if (criteria.severity === 'high' && criteria.hasDeploymentEvent && criteria.hasGitLabConfig) {
+      logger.info('Selected tier3 for incident', {
+        incidentId: incident.id,
+        reason: 'high severity with deployment event',
+      });
       return 'tier3';
     }
 
     // Tier 2: Has stack trace or deployment event with GitLab config
-    if (
-      (criteria.hasStackTrace || criteria.hasDeploymentEvent) &&
-      criteria.hasGitLabConfig
-    ) {
-      logger.info('Selected tier2 for incident', { incidentId: incident.id, reason: 'stack trace or deployment with GitLab config' });
+    if ((criteria.hasStackTrace || criteria.hasDeploymentEvent) && criteria.hasGitLabConfig) {
+      logger.info('Selected tier2 for incident', {
+        incidentId: incident.id,
+        reason: 'stack trace or deployment with GitLab config',
+      });
       return 'tier2';
     }
 
@@ -53,7 +51,10 @@ export class TierStrategySelector {
       (criteria.severity === 'high' || criteria.severity === 'critical') &&
       criteria.hasGitLabConfig
     ) {
-      logger.info('Selected tier2 for incident', { incidentId: incident.id, reason: 'high/critical severity with GitLab config' });
+      logger.info('Selected tier2 for incident', {
+        incidentId: incident.id,
+        reason: 'high/critical severity with GitLab config',
+      });
       return 'tier2';
     }
 

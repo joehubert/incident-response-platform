@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: incident-response-config
+data:
+  LOG_LEVEL: "info"
+  DATADOG_SITE: "datadoghq.com"
+  DATADOG_ERROR_TRACKING_ENABLED: "true"
+  DATADOG_DEPLOYMENT_TRACKING_ENABLED: "false"
+  GITLAB_URL: "https://gitlab.com"
+  SOURCEGRAPH_URL: "https://sourcegraph.com"
+  SOURCEGRAPH_MAX_RESULTS: "10"
+  WEB_SEARCH_ENABLED: "false"
+  MONITORS_CONFIG_PATH: "./config/monitors.json"
+  MONITORS_HOT_RELOAD: "true"
+  REDIS_TTL_BASELINE: "86400"
+  REDIS_TTL_METRICS: "300"
+  REDIS_TTL_REPO_METADATA: "3600"
+  REDIS_TTL_LLM: "3600"
+  DB_INVESTIGATION_ENABLED: "true"
+  DB_INVESTIGATION_TIMEOUT: "10"
+  DB_INVESTIGATION_MAX_ROWS: "100"
+  DB_INVESTIGATION_AUDIT: "true"

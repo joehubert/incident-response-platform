@@ -5,7 +5,12 @@
       "Bash(npm run typecheck:*)",
       "Bash(npm test:*)",
       "Bash(npm run test:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx jest --passWithNoTests)",
+      "Bash(npx jest tests/integration --passWithNoTests)"
     ]
   }
 }

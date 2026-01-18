@@ -112,10 +112,7 @@ export const evidenceCompleteness = new Histogram({
 /**
  * Helper function to update circuit breaker state metric
  */
-export function updateCircuitBreakerState(
-  service: string,
-  state: 'closed' | 'open' | 'half-open'
-) {
+export function updateCircuitBreakerState(service: string, state: 'closed' | 'open' | 'half-open') {
   const stateValue = state === 'closed' ? 0 : state === 'half-open' ? 1 : 2;
   circuitBreakerState.set({ service }, stateValue);
 }

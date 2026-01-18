@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { IncidentsController } from '../controllers/IncidentsController';
-import { validateRequest, paginationSchema, uuidSchema, incidentStatusSchema, severitySchema } from '../middleware/validation';
+import {
+  validateRequest,
+  paginationSchema,
+  uuidSchema,
+  incidentStatusSchema,
+  severitySchema,
+} from '../middleware/validation';
 import { asyncHandler } from '../middleware/error-handler';
 import { DatabaseClient } from '../../lib/clients/database';
 

@@ -64,7 +64,9 @@ export class GeminiClient {
         logger.debug('Calling Gemini API', { model: this.modelName });
 
         // Add JSON instruction to prompt for structured output
-        const jsonPrompt = prompt + '\n\nIMPORTANT: Respond with valid JSON only. No markdown, no code blocks, just raw JSON.';
+        const jsonPrompt =
+          prompt +
+          '\n\nIMPORTANT: Respond with valid JSON only. No markdown, no code blocks, just raw JSON.';
 
         const result = await model.generateContent(jsonPrompt);
         const response = result.response;
